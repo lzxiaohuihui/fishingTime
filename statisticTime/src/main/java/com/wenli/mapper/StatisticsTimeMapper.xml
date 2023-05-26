@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wenli.mapper.StatisticsTimeMapper">
+
+    <select id="findRunningTimeOneDay" parameterType="String" resultType="com.wenli.entity.dto.TimeRunning">
+        -- 查询某天运行时间
+        SELECT DATE (DATE_FORMAT(FROM_UNIXTIME(start_time), '%Y-%m-%d')) AS time_hour, SUM(running_time) AS total_running_time
+        FROM statistics_time
+        WHERE DATE (DATE_FORMAT(FROM_UNIXTIME(start_time), '%Y-%m-%d')) = #{oneDay}
+        GROUP BY time_hour;
+    </select>
+
+    <select id="findAppRunningTimeOneDay" parameterType="String" resultType="com.wenli.entity.dto.AppTimeRunning">
+        -- 查询某天各app的运行时间
+        SELECT DATE (DATE_FORMAT(FROM_UNIXTIME(start_time), '%Y-%m-%d 00:00:00')) AS time_stamp, app, SUM(running_time) AS total_running_time
+        FROM statistics_time
+        WHERE DATE (DATE_FORMAT(FROM_UNIXTIME(start_time), '%Y-%m-%d 00:00:00')) = #{oneDay}
+        GROUP BY time_stamp, app;
+    </select>
+
+    <select id="findRunningTimeByHourOneDay" parameterType="String" resultType="com.wenli.entity.dto.TimeRunning">
+        -- 查询某天每一小时的运行时间
+        SELECT DATE_FORMAT(FROM_UNIXTIME(start_time), '%H:00') AS time_stamp,
+               SUM(running_time) / 60                          AS total_running_time
+        FROM statistics_time
+        WHERE DATE (DATE_FORMAT(FROM_UNIXTIME(start_time), '%Y-%m-%d 00:00:00')) = #{oneDay}
+        GROUP BY time_stamp;
+    </select>
+
+    <select id="findVscodeRunningTime" parameterType="String" resultType="com.wenli.entity.dto.AppTimeRunning">
+        -- 分析vscode
+        SELECT DATE_FORMAT(FROM_UNIXTIME(start_time), '%Y-%m-%d %H:%i:%s')  AS time_stamp,
+        title                                                           AS app,
+        running_time                                                    AS total_running_time
+        FROM statistics_time
+        WHERE app = 'code'
+        AND DATE (DATE_FORMAT(FROM_UNIXTIME(start_time), '%Y-%m-%d 00:00:00')) &gt;= #{startDay}
+        AND DATE (DATE_FORMAT(FROM_UNIXTIME(end_time), '%Y-%m-%d 00:00:00')) &lt;= #{endDay}
+    </select>
+
+    <select id="findIdeaRunningTime" parameterType="String" resultType="com.wenli.entity.dto.AppTimeRunning">
+        -- 分析idea
+        SELECT DATE_FORMAT(FROM_UNIXTIME(start_time), '%Y-%m-%d %H:%i:%s')  AS time_stamp,
+               title                                                           AS app,
+               running_time                                                    AS total_running_time
+        FROM statistics_time
+        WHERE app = 'jetbrains-idea'
+          AND DATE (DATE_FORMAT(FROM_UNIXTIME(start_time), '%Y-%m-%d 00:00:00')) &gt;= #{startDay}
+          AND DATE (DATE_FORMAT(FROM_UNIXTIME(end_time), '%Y-%m-%d 00:00:00')) &lt;= #{endDay}
+    </select>
+
+    <select id="findBetweenDaysRunningTime" resultType="com.wenli.entity.dto.TimeRunning">
+
+    </select>
+
+</mapper>

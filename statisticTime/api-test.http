@@ -1,0 +1,37 @@
+###
+POST http://localhost:8080/statistics
+Content-Type: application/json
+
+{
+  "id": 117440515,
+  "title": "testXlib.py - pycolmap - Visual Studio Code",
+  "app": "code",
+  "startTime": 1682217643,
+  "endTime": 1682217666
+}
+
+###
+GET http://localhost:8080/statistics
+
+
+###
+GET http://localhost:8080/gettimes
+
+###
+GET http://localhost:8080/getSevenTimes
+
+###
+GET http://localhost:8080/getAppSevenDaysTime
+
+
+###
+GET http://localhost:8080/getAppRunningTimeToday
+
+###
+GET http://localhost:8888/getAppRunningTimeOneDay/2023-05-23
+
+###
+GET http://localhost:8888/getRunningTimeByHour/2023-05-23
+
+###
+GET http://localhost:8888/getSevenTimes/2023-05-12

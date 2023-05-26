@@ -1,0 +1,18 @@
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">-->
+<!--<mapper namespace="com.wenli.mapper.StatisticsTimeMapper">-->
+<!--    <select id="findRunningTime" resultType="com.wenli.entity.dto.TimeRunning">-->
+<!--        SELECT running_time as total_running_time-->
+<!--        FROM statistics_time-->
+<!--        WHERE start_time &gt;= #{startTime} AND end_time &lt; #{endTime};-->
+<!--    </select>-->
+
+
+<!--    <select id="findAppRunningTime" resultType="com.wenli.entity.dto.AppTimeRunning">-->
+<!--        SELECT app, sum(running_time) as total_running_time-->
+<!--        FROM statistics_time-->
+<!--        WHERE start_time &gt;= #{startTime} AND end_time &lt; #{endTime}-->
+<!--        group by app;-->
+<!--    </select>-->
+
+<!--</mapper>-->
