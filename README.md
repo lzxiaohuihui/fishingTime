@@ -1,38 +1,12 @@
----
-title: 在Ubuntu上统计软件使用时长
-date: 2023-05-25 16:26:13
-permalink: /pages/361d44/
----
+## 2023/6/12 更新
 
-## FishingTime
+使用Chrome api来获取网站的图标
 
-在Ubuntu X11桌面上统计**软件**使用时长和分析**VS Code**和**IDEA**项目情况。
+https://www.google.com/s2/favicons?domain=google.com
 
-统计的时长计算方式为，窗口获得焦点，到失去焦点这段时间，并且每次最大统计5分钟。
+读取Chrome浏览器的History文件
 
-## 界面展示
-
-### 主视图
-
-![image-20230526202748669](https://lzh-images.oss-cn-hangzhou.aliyuncs.com/images/image-20230526202748669.png)
-
-### 其它视图
-
-![image-20230526202849891](https://lzh-images.oss-cn-hangzhou.aliyuncs.com/images/image-20230526202849891.png)
-
-## 开始使用
-
-```shell
-# 终端1
-cd statisticTime
-mvn package
-java -jar /home/lzh/Documents/IdeaProjects/statistic/statisticTime/target/statisticTime-1.0-SNAPSHOT.jar
-
-# 终端2
-cd statisticWeb
-yarn
-yarn dev
-```
+![image-20230613185205634](https://lzh-images.oss-cn-hangzhou.aliyuncs.com/images/image-20230613185205634.png)
 
 
 
@@ -61,11 +35,6 @@ CREATE TABLE statistics_time
     end_time     INT          NOT NULL,
     running_time INT
 );
-CREATE INDEX idx_app
-    ON statistics_time (app);
-
-CREATE INDEX idx_start_time
-    ON statistics_time (start_time);
 ```
 
 
@@ -103,7 +72,7 @@ GROUP BY time_hour, app;
 
 
 
-## 优化查询(待比较)
+## 优化查询
 
 在业务层进行一下数据处理，仅根据时间戳进行查询，不进行日期格式转换，执行的单表查询类型为range。
 

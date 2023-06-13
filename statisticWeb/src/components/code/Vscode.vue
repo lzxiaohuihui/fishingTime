@@ -66,7 +66,7 @@ export default {
                     inverse: true,
                     animationDuration: 500,
                     animationDurationUpdate: 500,
-                    max: arry.length > 7 ? 7 : arry.length // only the largest 3 bars will be displayed
+                    max: arry.length > 7 ? 7 : arry.length - 1 // only the largest 3 bars will be displayed
                 },
                 series: [
                     {

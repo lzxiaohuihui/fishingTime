@@ -10,5 +10,5 @@ import lombok.ToString;
 public class AppTimeRunning{
     private String timeStamp;
     private String app;
-    private Integer totalRunningTime;
+    private Long totalRunningTime;
 }

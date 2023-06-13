@@ -49,8 +49,13 @@
           AND DATE (DATE_FORMAT(FROM_UNIXTIME(end_time), '%Y-%m-%d 00:00:00')) &lt;= #{endDay}
     </select>
 
-    <select id="findBetweenDaysRunningTime" resultType="com.wenli.entity.dto.TimeRunning">
 
+    <select id="findAllChromeRecords" parameterType="String" resultType="com.wenli.entity.po.StatisticsTime">
+        SELECT *
+        FROM statistics_time
+        WHERE app = 'google-chrome'
+          AND DATE (DATE_FORMAT(FROM_UNIXTIME(start_time), '%Y-%m-%d 00:00:00')) &gt;= #{startDay}
+          AND DATE (DATE_FORMAT(FROM_UNIXTIME(end_time), '%Y-%m-%d 00:00:00')) &lt;= #{endDay}
     </select>
 
 </mapper>
