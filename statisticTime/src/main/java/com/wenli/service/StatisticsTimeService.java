@@ -17,4 +17,6 @@ public interface StatisticsTimeService {
     List<AppTimeRunning> findVsCodeRunningTime(String startDay, String endDay);
 
     List<AppTimeRunning> findIdeaRunningTime(String startDay, String endDay);
+
+    List<StatisticsTime> findAllChromeRecords(String startDay, String endDay);
 }

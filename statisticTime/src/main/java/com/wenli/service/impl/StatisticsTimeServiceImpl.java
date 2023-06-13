@@ -3,8 +3,8 @@ package com.wenli.service.impl;
 
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
-import com.wenli.entity.dto.TimeRunning;
 import com.wenli.entity.dto.AppTimeRunning;
+import com.wenli.entity.dto.TimeRunning;
 import com.wenli.entity.po.StatisticsTime;
 import com.wenli.mapper.StatisticsTimeMapper;
 import com.wenli.service.StatisticsTimeService;
@@ -12,8 +12,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.*;
-
-import static cn.hutool.poi.excel.sax.ElementName.v;
 
 @Service
 public class StatisticsTimeServiceImpl implements StatisticsTimeService {
@@ -63,17 +61,17 @@ public class StatisticsTimeServiceImpl implements StatisticsTimeService {
     @Override
     public List<AppTimeRunning> findVsCodeRunningTime(String startDay, String endDay) {
         List<AppTimeRunning> vscodeRunningTime = statisticsTimeMapper.findVscodeRunningTime(startDay, endDay);
-        Map<String, Integer> appTimes = new HashMap<>();
+        Map<String, Long> appTimes = new HashMap<>();
         for (AppTimeRunning appTimeRunning : vscodeRunningTime) {
             String[] split = appTimeRunning.getApp().split("-");
-            if (split.length<3) {
+            if (split.length < 3) {
                 continue;
             }
             String app = split[1].trim();
-            appTimes.put(app, appTimes.getOrDefault(app, 0)+appTimeRunning.getTotalRunningTime());
+            appTimes.put(app, appTimes.getOrDefault(app, 0L) + appTimeRunning.getTotalRunningTime());
         }
         List<AppTimeRunning> res = new ArrayList<>();
-        appTimes.forEach((k,v)->{
+        appTimes.forEach((k, v) -> {
             res.add(new AppTimeRunning(null, k, v));
         });
         return res;
@@ -82,23 +80,37 @@ public class StatisticsTimeServiceImpl implements StatisticsTimeService {
     @Override
     public List<AppTimeRunning> findIdeaRunningTime(String startDay, String endDay) {
         List<AppTimeRunning> vscodeRunningTime = statisticsTimeMapper.findIdeaRunningTime(startDay, endDay);
-        Map<String, Integer> appTimes = new HashMap<>();
+        Map<String, Long> appTimes = new HashMap<>();
         for (AppTimeRunning appTimeRunning : vscodeRunningTime) {
+            if (appTimeRunning==null || appTimeRunning.getApp() == null){
+                continue;
+            }
             String[] split = appTimeRunning.getApp().split("–");
             if (split.length != 2) {
                 continue;
             }
             // "statisticTime [~/Documents/IdeaProjects/statistic/statisticTime]"
             int index = split[0].indexOf('[');
-            index = index==-1?split[0].length():index;
+            index = index == -1 ? split[0].length() : index;
             String app = split[0].substring(0, index).trim();
-            appTimes.put(app, appTimes.getOrDefault(app, 0)+appTimeRunning.getTotalRunningTime());
+            appTimes.put(app, appTimes.getOrDefault(app, 0L) + appTimeRunning.getTotalRunningTime());
         }
         List<AppTimeRunning> res = new ArrayList<>();
-        appTimes.forEach((k,v)->{
+        appTimes.forEach((k, v) -> {
             res.add(new AppTimeRunning(null, k, v));
         });
         return res;
+    }
+
+    @Override
+    public List<StatisticsTime> findAllChromeRecords(String startDay, String endDay) {
+        List<StatisticsTime> statisticsTimes = statisticsTimeMapper.findAllChromeRecords(startDay, endDay);
+        for (StatisticsTime statisticsTime : statisticsTimes) {
+            int len = statisticsTime.getTitle().length();
+            if (len < 17) continue;
+            statisticsTime.setTitle(statisticsTime.getTitle().substring(0, len-16));
+        }
+        return statisticsTimes;
     }
 
 }

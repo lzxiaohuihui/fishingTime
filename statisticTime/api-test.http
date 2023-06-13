@@ -35,3 +35,7 @@ GET http://localhost:8888/getRunningTimeByHour/2023-05-23
 
 ###
 GET http://localhost:8888/getSevenTimes/2023-05-12
+
+
+###
+GET http://localhost:8888/getChromeTime/20230610_20230612

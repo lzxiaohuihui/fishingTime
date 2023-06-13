@@ -33,14 +33,14 @@ public class SocketListener implements ApplicationRunner {
                 throw new RuntimeException(e);
             }
         }).start();
-        /**
-        Thread.sleep(1000);
-        String projectDir = System.getProperty("user.dir");
-        String scriptPath = projectDir + "/resume.sh"; // 替换为您的脚本路径
-        ProcessBuilder processBuilder = new ProcessBuilder(scriptPath);
-        processBuilder.directory(new File(projectDir));
-        Process process = processBuilder.start();
-        */
+
+//        Thread.sleep(1000);
+//        String projectDir = System.getProperty("user.dir");
+//        String scriptPath = projectDir + "/resume.sh"; // 替换为您的脚本路径
+//        ProcessBuilder processBuilder = new ProcessBuilder(scriptPath);
+//        processBuilder.directory(new File(projectDir));
+//        Process process = processBuilder.start();
+
     }
 }
 
