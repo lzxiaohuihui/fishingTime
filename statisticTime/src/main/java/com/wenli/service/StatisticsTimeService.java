@@ -4,6 +4,7 @@ import com.wenli.entity.dto.TimeRunning;
 import com.wenli.entity.dto.AppTimeRunning;
 import com.wenli.entity.po.StatisticsTime;
 
+import java.text.ParseException;
 import java.util.List;
 
 public interface StatisticsTimeService {
@@ -14,9 +15,5 @@ public interface StatisticsTimeService {
 
     List<TimeRunning> findRunningTimeByHourOneDay(String oneDay);
 
-    List<AppTimeRunning> findVsCodeRunningTime(String startDay, String endDay);
 
-    List<AppTimeRunning> findIdeaRunningTime(String startDay, String endDay);
-
-    List<StatisticsTime> findAllChromeRecords(String startDay, String endDay);
 }

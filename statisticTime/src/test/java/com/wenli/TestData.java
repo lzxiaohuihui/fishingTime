@@ -1,9 +1,14 @@
 package com.wenli;
 
+import cn.hutool.core.date.DateField;
+import cn.hutool.core.date.DateRange;
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.wenli.entity.dto.TimeRunning;
 import com.wenli.entity.po.ChromeUrls;
 import com.wenli.entity.po.StatisticsTime;
 import com.wenli.mapper.ChromeUrlMapper;
+import com.wenli.mapper.StatisticsMysqlMapper;
 import com.wenli.mapper.StatisticsTimeMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,8 +47,8 @@ public class TestData {
 //        File dest = new File(System.getProperty("user.dir")+"/chromeHistory.db");
         File dest = new File("/home/lzh/history.db");
 
-        try (InputStream in = Files.newInputStream(source.toPath());
-             OutputStream out = Files.newOutputStream(dest.toPath())) {
+        try (InputStream in = Files.newInputStream(source.toPath()); OutputStream out =
+                Files.newOutputStream(dest.toPath())) {
             byte[] buffer = new byte[1024];
             int length;
             while ((length = in.read(buffer)) > 0) {
@@ -56,13 +61,13 @@ public class TestData {
 //        long l = dest.lastModified();
 //        Date date = new Date(l);
 //        System.out.println(date);
-        QueryWrapper<ChromeUrls> queryWrapper = new QueryWrapper<>();
-        queryWrapper.gt("last_visit_time", 13323186463309130L);
-        List<ChromeUrls> chromeHistories = chromeHistoryMapper.selectList(queryWrapper);
-        for (ChromeUrls chromeHistory : chromeHistories) {
-            System.out.println(new Date(chromeHistory.getLastVisitTime() / 1000 - 11644473600000L));
-        }
-        System.out.println(chromeHistories.size());
+//        QueryWrapper<ChromeUrls> queryWrapper = new QueryWrapper<>();
+//        queryWrapper.gt("last_visit_time", 13323186463309130L);
+//        List<ChromeUrls> chromeHistories = chromeHistoryMapper.selectList(queryWrapper);
+//        for (ChromeUrls chromeHistory : chromeHistories) {
+//            System.out.println(new Date(chromeHistory.getLastVisitTime() / 1000 - 11644473600000L));
+//        }
+//        System.out.println(chromeHistories.size());
     }
 
 
@@ -103,7 +108,7 @@ public class TestData {
         // get the first graph
         List<List<List<Integer>>> paths = new ArrayList<>();
         List<List<Integer>> path = new ArrayList<>();
-        path.add(Arrays.asList(0,0));
+        path.add(Arrays.asList(0, 0));
         int[] preStep = {0, 0};
         findAllGraph(paths, visited, path, 9, preStep);
         for (List<List<Integer>> lists : paths) {
@@ -111,9 +116,7 @@ public class TestData {
         }
     }
 
-    int[][] direction = new int[][]{
-            {0, 1}, {0, -1}, {1, 0}, {-1, 0}
-    };
+    int[][] direction = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
 
     void findAllGraph(List<List<List<Integer>>> paths, boolean[][] visited, List<List<Integer>> path, int area,
                       int[] preStep) {
@@ -131,15 +134,56 @@ public class TestData {
             preStep = new int[]{nextX, nextY};
             path.add(new ArrayList<>(Arrays.asList(nextX, nextY)));
             findAllGraph(paths, visited, path, area, preStep);
-            path.remove(path.size()-1);
+            path.remove(path.size() - 1);
             visited[nextX][nextY] = false;
         }
 
     }
 
     @Test
-    public void testUrl(){
+    public void testUrl() {
         List<String> titleByUrl = chromeHistoryMapper.findTitleByUrl("https://www.bilibili.com%");
         System.out.println(titleByUrl);
+    }
+
+    @Resource
+    private StatisticsMysqlMapper statisticsMysqlMapper;
+
+    @Test
+    public void testFindHourByIndex() {
+
+
+        // 获取当前日期
+        Date date = new Date();
+
+        // 生成一天当中每一个小时的区间
+        DateRange rangeList = DateUtil.range(DateUtil.beginOfDay(date), DateUtil.endOfDay(date), DateField.HOUR_OF_DAY);
+
+        // 输出每个小时的区间
+        List<TimeRunning> timeRunnings = new ArrayList<>();
+        for (Date range : rangeList) {
+            Integer res = statisticsMysqlMapper.findRunningTime(range.getTime() / 1000,
+                    DateUtil.endOfHour(range).getTime() / 1000);
+            if (res == null) continue;
+            timeRunnings.add(new TimeRunning(range.toString(), res));
+            System.out.println(DateUtil.formatDateTime(range) + " - " + DateUtil.formatDateTime(DateUtil.endOfHour(range)));
+            System.out.println(timeRunnings);
+
+        }
+    }
+
+    @Test
+    public void testFindHourByFunc() {
+        long l = System.currentTimeMillis();
+
+        for (int i = 0; i < 100; ++i) {
+            List<TimeRunning> runningTimeByHourOneDay = statisticsTimeMapper.findRunningTimeByHourOneDay("20230614");
+        }
+//        for (TimeRunning running : runningTimeByHourOneDay) {
+//            System.out.println(running);
+//        }
+
+        long r = System.currentTimeMillis();
+        System.out.println("耗时：" + (r - l) + "毫秒");
     }
 }

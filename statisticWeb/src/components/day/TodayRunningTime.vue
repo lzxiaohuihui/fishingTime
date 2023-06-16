@@ -40,7 +40,7 @@ export default {
     },
     methods: {
         async getData() {
-            const res = await this.$http.get('http://localhost:8888/getRunningTimeByHour/' + this.selectedDate)
+            const res = await this.$http.get('http://localhost:8848/getRunningTimeByHour/' + this.selectedDate)
             console.log(res.data)
             var arrx = []
             var arry = []
@@ -48,8 +48,9 @@ export default {
 
             for (var i = 0; i < res.data.length; i++) {
                 arrx.push(res.data[i]['timeStamp'])
-                arry.push(res.data[i]['totalRunningTime'])
-                sum += res.data[i]['totalRunningTime']
+                arry.push(Math.floor(res.data[i]['totalRunningTime'] / 60))
+                // sum += res.data[i]['totalRunningTime']
+                sum += arry[i]
             }
             var minutes = sum > 60 ? 60 : sum
             const total = minutes + "分"

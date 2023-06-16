@@ -48,7 +48,7 @@ export default {
             param.append('url', this.formInline.url);
             axios({
                 method: 'post',
-                url: 'http://localhost:8888/addStatisticsUrl',
+                url: 'http://localhost:8848/addStatisticsUrl',
                 data: param
             })
                 .then(response => {
@@ -60,7 +60,7 @@ export default {
         },
         async getData() {
 
-            const res = await this.$http.get('http://localhost:8888/getChromeTime/' + this.startDay + '_' + this.endDay)
+            const res = await this.$http.get('http://localhost:8848/getChromeTime/' + this.startDay + '_' + this.endDay)
             var arrx = []
             var arry = []
             var sum = 0
@@ -155,7 +155,7 @@ export default {
             myChart.setOption(option)
 
             setInterval(() => {
-                axios.get('http://localhost:8888/getChromeTime/' + this.startDay + '_' + this.endDay).then((r) => {
+                axios.get('http://localhost:8848/getChromeTime/' + this.startDay + '_' + this.endDay).then((r) => {
                     var x = []
                     var y = []
                     var sum = 0

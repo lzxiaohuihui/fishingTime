@@ -1,4 +1,4 @@
-package com.wenli.service.impl;
+package com.wenli.service;
 
 /**
  * @description:

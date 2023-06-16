@@ -11,4 +11,9 @@ public class AppTimeRunning{
     private String timeStamp;
     private String app;
     private Long totalRunningTime;
+
+    public AppTimeRunning(String app, Long totalRunningTime) {
+        this.app = app;
+        this.totalRunningTime = totalRunningTime;
+    }
 }

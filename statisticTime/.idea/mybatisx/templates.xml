@@ -41,15 +41,14 @@
                 </ModuleInfoGo>
               </list>
             </option>
-            <option name="needsComment" value="true" />
             <option name="needsModel" value="true" />
             <option name="relativePackage" value="domain" />
             <option name="superClass" value="" />
             <option name="tableUIInfoList">
               <list>
                 <TableUIInfo>
-                  <option name="className" value="StatisticsUrls" />
-                  <option name="tableName" value="statistics_urls" />
+                  <option name="className" value="Segments" />
+                  <option name="tableName" value="segments" />
                 </TableUIInfo>
               </list>
             </option>

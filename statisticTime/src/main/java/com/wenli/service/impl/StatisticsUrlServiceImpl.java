@@ -3,6 +3,7 @@ package com.wenli.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.wenli.entity.po.StatisticsUrls;
 import com.wenli.mapper.StatisticsUrlsMapper;
+import com.wenli.service.StatisticsUrlService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -13,7 +14,7 @@ import javax.annotation.Resource;
  * @author: lzh
  */
 @Service
-public class StatisticsUrlServiceImpl implements StatisticsUrlService{
+public class StatisticsUrlServiceImpl implements StatisticsUrlService {
 
     @Resource
     private StatisticsUrlsMapper statisticsUrlsMapper;
