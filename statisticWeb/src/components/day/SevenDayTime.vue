@@ -29,7 +29,7 @@ export default {
     },
     methods: {
         async getData() {
-            const res = await this.$http.get('http://localhost:8888/getSevenTimes/' + this.selectedDate)
+            const res = await this.$http.get('http://localhost:8848/getSevenTimes/' + this.selectedDate)
             console.log(res.data)
             var arrx = []
             var arry = []

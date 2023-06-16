@@ -7,11 +7,21 @@ spring:
         mysql:
           url: jdbc:mysql://localhost:3306/statistic?characterEncoding=utf8&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
           username: root
-          password: xxxx
+          password: xxx
           driver-class-name: com.mysql.cj.jdbc.Driver
         sqlite:
-          url: jdbc:sqlite:/home/lzh/history.db
+          url: jdbc:sqlite:chromeHistory.db
           driver-class-name: org.sqlite.JDBC
+
+  task:
+    execution:
+      pool:
+        core-size: 5
+        max-size: 15
+        queue-capacity: 100
+    scheduling:
+      pool:
+        size: 5
 
 
 

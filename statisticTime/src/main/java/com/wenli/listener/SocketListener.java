@@ -34,6 +34,8 @@ public class SocketListener implements ApplicationRunner {
             }
         }).start();
 
+
+        new File(System.getProperty("user.dir") + "/chromeHistory.db");
 //        Thread.sleep(1000);
 //        String projectDir = System.getProperty("user.dir");
 //        String scriptPath = projectDir + "/resume.sh"; // 替换为您的脚本路径
