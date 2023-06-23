@@ -12,7 +12,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 // implements ApplicationRunner 启动时执行
-@Component
+//@Component
 public class SocketListener implements ApplicationRunner {
     private final Integer PORT = 1413;
 

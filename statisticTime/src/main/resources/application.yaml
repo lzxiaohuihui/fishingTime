@@ -1,4 +1,4 @@
-server.port: 8888
+server.port: 8848
 spring:
   datasource:
     dynamic:
@@ -22,6 +22,19 @@ spring:
     scheduling:
       pool:
         size: 5
+
+  rabbitmq:
+    addresses: localhost
+    port: 5672
+    virtual-host: /
+    stream:
+      username: guest
+      password: guest
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    listener:
+      simple:
+        acknowledge-mode: manual
 
 
 

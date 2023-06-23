@@ -1,8 +1,7 @@
 package com.wenli;
 
-import cn.hutool.core.date.DateField;
-import cn.hutool.core.date.DateRange;
-import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.date.*;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.wenli.entity.dto.TimeRunning;
 import com.wenli.entity.po.ChromeUrls;
@@ -10,6 +9,7 @@ import com.wenli.entity.po.StatisticsTime;
 import com.wenli.mapper.ChromeUrlMapper;
 import com.wenli.mapper.StatisticsMysqlMapper;
 import com.wenli.mapper.StatisticsTimeMapper;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,6 +31,7 @@ import java.util.List;
  * @date: 2023-06-07 8:36 p.m.
  * @author: lzh
  */
+@Ignore
 @SpringBootTest
 @RunWith(SpringRunner.class)
 public class TestData {
@@ -143,7 +144,7 @@ public class TestData {
     @Test
     public void testUrl() {
         List<String> titleByUrl = chromeHistoryMapper.findTitleByUrl("https://www.bilibili.com%");
-        System.out.println(titleByUrl);
+//        System.out.println(titleByUrl);
     }
 
     @Resource
@@ -166,8 +167,8 @@ public class TestData {
                     DateUtil.endOfHour(range).getTime() / 1000);
             if (res == null) continue;
             timeRunnings.add(new TimeRunning(range.toString(), res));
-            System.out.println(DateUtil.formatDateTime(range) + " - " + DateUtil.formatDateTime(DateUtil.endOfHour(range)));
-            System.out.println(timeRunnings);
+//            System.out.println(DateUtil.formatDateTime(range) + " - " + DateUtil.formatDateTime(DateUtil.endOfHour(range)));
+//            System.out.println(timeRunnings);
 
         }
     }
@@ -185,5 +186,40 @@ public class TestData {
 
         long r = System.currentTimeMillis();
         System.out.println("耗时：" + (r - l) + "毫秒");
+    }
+
+    private StatisticsTime[] splitDateTime(StatisticsTime statisticsTime, DateTime date1, DateTime date2){
+        DateTime dateTime = DateUtil.beginOfHour(date2);
+        long between1 = DateUtil.between(date1, dateTime, DateUnit.SECOND);
+        StatisticsTime statisticsTime1 = new StatisticsTime();
+        StatisticsTime statisticsTime2 = new StatisticsTime();
+        BeanUtil.copyProperties(statisticsTime, statisticsTime1);
+        BeanUtil.copyProperties(statisticsTime, statisticsTime2);
+        statisticsTime1.setStartTime(date1.getTime()/1000);
+        statisticsTime1.setEndTime(dateTime.getTime()/1000);
+        statisticsTime1.setRunningTime(between1);
+
+        statisticsTime2.setStartTime(dateTime.getTime()/1000);
+        statisticsTime2.setEndTime(date2.getTime()/1000);
+        long between2 = DateUtil.between(dateTime, date2, DateUnit.SECOND);
+        statisticsTime2.setRunningTime(between2);
+
+        return new StatisticsTime[]{statisticsTime1, statisticsTime2};
+    }
+    @Test
+    public void splitData(){
+        List<StatisticsTime> statisticsTimes = statisticsTimeMapper.selectList(null);
+        for (StatisticsTime statisticsTime : statisticsTimes) {
+            DateTime date1 = DateUtil.date(statisticsTime.getStartTime() * 1000L);
+            DateTime date2 = DateUtil.date((statisticsTime.getStartTime()+statisticsTime.getRunningTime()) * 1000L);
+            boolean isSameHour = DateUtil.hour(date1, true) == DateUtil.hour(date2, true);
+            if (isSameHour) continue;
+            Long id = statisticsTime.getId();
+            StatisticsTime[] p = splitDateTime(statisticsTime, date1, date2);
+            statisticsTimeMapper.insert(p[0]);
+            statisticsTimeMapper.insert(p[1]);
+            statisticsTimeMapper.deleteById(id);
+
+        }
     }
 }
