@@ -4,6 +4,16 @@ import com.alibaba.fastjson.JSON;
 import com.wenli.entity.dto.WindowDto;
 import com.wenli.entity.po.StatisticsTime;
 import com.wenli.service.StatisticsTimeService;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.string.StringDecoder;
 import org.apache.commons.lang.StringEscapeUtils;
 
 import java.io.BufferedReader;
@@ -11,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
 class Client extends Thread {
@@ -53,8 +64,10 @@ class Client extends Thread {
         } catch (IOException e) {
             System.out.println("Client disconnected");
         } catch (Exception e1){
-            this.run();
+            this.start();
             e1.printStackTrace();
         }
     }
+
+
 }

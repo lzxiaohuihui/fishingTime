@@ -1,5 +1,6 @@
 package com.wenli.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.github.benmanes.caffeine.cache.CacheLoader;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
@@ -8,6 +9,7 @@ import com.wenli.mapper.ChromeUrlMapper;
 import com.wenli.mapper.StatisticsUrlsMapper;
 import com.wenli.service.StatisticsBrowser;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.lucene.util.RamUsageEstimator;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -60,6 +62,9 @@ public class StatisticsChromeImpl implements StatisticsBrowser {
 
     @Override
     public String getChromeUrl(String key){
+        if (titlesCache.get(key) == null){
+            return "None";
+        }
         return titlesCache.get(key);
     }
 
@@ -91,6 +96,7 @@ public class StatisticsChromeImpl implements StatisticsBrowser {
                 titlesCache.put(title, statisticsUrl.getUrl());
             }
         }
+        log.info("the size of titlesCache is: {} KB", RamUsageEstimator.sizeOfMap(titlesCache.asMap())/1000);
 
     }
 }

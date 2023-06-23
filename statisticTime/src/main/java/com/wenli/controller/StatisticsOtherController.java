@@ -61,7 +61,7 @@ public class StatisticsOtherController {
         List<AppTimeRunning> res = new ArrayList<>();
         Map<String, Long> times = new HashMap<>();
         for (StatisticsTime s : allChromeRecords) {
-            if ("Untitled".equals(s.getTitle())) continue;
+            if (s.getTitle() == null || "Untitled".equals(s.getTitle())) continue;
             String app = statisticsChrome.getChromeUrl(s.getTitle());
             if ("None".equals(app)) continue;
             times.put(app, times.getOrDefault(app, 0L)+s.getRunningTime());

@@ -10,6 +10,7 @@ import com.wenli.mapper.StatisticsMysqlMapper;
 import com.wenli.service.StatisticsOtherService;
 import com.wenli.utils.MyDateUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.lucene.util.RamUsageEstimator;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.stereotype.Service;
@@ -89,6 +90,7 @@ public class StatisticsOtherServiceImpl implements StatisticsOtherService {
 
     @Override
     public List<AppTimeRunning> findVsCodeRunningTime(String startDay, String endDay) {
+        log.info("the size of vsCodeRunningTimeCache is: {} KB", RamUsageEstimator.sizeOfMap(vsCodeRunningTimeCache.asMap())/1000);
         return getDataFromCache(startDay, endDay, vsCodeRunningTimeCache);
     }
 
@@ -116,6 +118,7 @@ public class StatisticsOtherServiceImpl implements StatisticsOtherService {
 
     @Override
     public List<AppTimeRunning> findIdeaRunningTime(String startDay, String endDay) {
+        log.info("the size of ideaRunningTimeCache is: {} KB", RamUsageEstimator.sizeOfMap(ideaRunningTimeCache.asMap())/1000);
         return getDataFromCache(startDay, endDay, ideaRunningTimeCache);
     }
 
@@ -150,6 +153,7 @@ public class StatisticsOtherServiceImpl implements StatisticsOtherService {
 
     @Override
     public List<StatisticsTime> findAllChromeRecords(String startDay, String endDay) {
+        log.info("the size of titlesFromMysqlCache is: {} KB", RamUsageEstimator.sizeOfMap(titlesFromMysqlCache.asMap())/1000);
         Date[] days = MyDateUtils.getDays(startDay, endDay);
         List<StatisticsTime> res = new ArrayList<>();
         for (Date day: days){
@@ -165,6 +169,7 @@ public class StatisticsOtherServiceImpl implements StatisticsOtherService {
         long end = DateUtil.endOfDay(date).getTime()/1000;
         List<StatisticsTime> statisticsTimes = statisticsMysqlMapper.findChromeRecords(start, end);
         for (StatisticsTime statisticsTime : statisticsTimes) {
+            if (statisticsTime == null || statisticsTime.getTitle() == null) continue;
             int len = statisticsTime.getTitle().length();
             if (len < 17) continue;
             statisticsTime.setTitle(statisticsTime.getTitle().substring(0, len - 16));

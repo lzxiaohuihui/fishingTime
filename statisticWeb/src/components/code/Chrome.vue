@@ -107,7 +107,7 @@ export default {
                     inverse: true,
                     animationDuration: 500,
                     animationDurationUpdate: 500,
-                    max: arry.length >= 7 ? 7 : arry.length - 1, // only the largest 3 bars will be displayed
+                    max: arry.length > 7 ? 7 : arry.length - 1, // only the largest 3 bars will be displayed
                     axisLabel: {
                         formatter: function (value) {
                             // 使用 formatter 函数返回自定义的 HTML 标签

@@ -1,3 +1,7 @@
+## 2023/6/21 日志
+
+![image-20230623110107427](https://lzh-images.oss-cn-hangzhou.aliyuncs.com/images/image-20230623110107427.png)
+
 ## 2023/6/16 日志
 
 优化了数据库查询性能，从原来的全表扫描，到都用上了索引。

@@ -1,27 +1,30 @@
 package com.wenli.service.impl;
 
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.*;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.benmanes.caffeine.cache.CacheLoader;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.wenli.entity.dto.AppTimeRunning;
 import com.wenli.entity.dto.TimeRunning;
+import com.wenli.entity.dto.WindowDto;
 import com.wenli.entity.po.StatisticsTime;
 import com.wenli.mapper.StatisticsMysqlMapper;
 import com.wenli.service.StatisticsTimeService;
 import com.wenli.utils.MyDateUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.lucene.util.RamUsageEstimator;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -31,6 +34,9 @@ public class StatisticsTimeServiceImpl implements StatisticsTimeService {
 
     @Resource
     private StatisticsMysqlMapper statisticsMysqlMapper;
+
+    @Resource
+    private TransactionTemplate transactionTemplate;
 
     private LoadingCache<String, Map<String, List<AppTimeRunning>>> appHoursCache;
 
@@ -65,6 +71,61 @@ public class StatisticsTimeServiceImpl implements StatisticsTimeService {
     @Override
     public void addStatisticsTime(StatisticsTime statisticsTime) {
         statisticsMysqlMapper.insert(statisticsTime);
+    }
+
+    @Override
+    public void addStatisticsTime(WindowDto lastSeen, WindowDto curSeen) {
+        long maxTime = 300;
+        StatisticsTime statisticsTime = new StatisticsTime();
+        BeanUtil.copyProperties(curSeen, statisticsTime, false);
+        statisticsTime.setStartTime(lastSeen.getTimestamp());
+        statisticsTime.setRunningTime(Math.min(curSeen.getTimestamp()-statisticsTime.getStartTime(), maxTime));
+        statisticsTime.setEndTime(statisticsTime.getStartTime() + statisticsTime.getRunningTime());
+
+        DateTime date1 = DateUtil.date(statisticsTime.getStartTime() * 1000L);
+        DateTime date2 = DateUtil.date(statisticsTime.getEndTime() * 1000L);
+        boolean isSameHour = DateUtil.hour(date1, true) == DateUtil.hour(date2, true);
+
+        if(lastSeen.getXid() != 0){
+            if (isSameHour){
+                statisticsMysqlMapper.insert(statisticsTime);
+            }else{
+                transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+                    @Override
+                    protected void doInTransactionWithoutResult(TransactionStatus status) {
+                        try {
+                            StatisticsTime[] statisticsTimes = splitDateTime(statisticsTime, date1, date2);
+                            statisticsMysqlMapper.insert(statisticsTimes[0]);
+                            statisticsMysqlMapper.insert(statisticsTimes[1]);
+                        }catch (Exception e){
+                            status.setRollbackOnly();
+                            throw new RuntimeException("保存数据库异常...");
+                        }
+                    }
+                });
+
+            }
+        }
+
+    }
+    private StatisticsTime[] splitDateTime(StatisticsTime statisticsTime, DateTime date1, DateTime date2){
+        DateTime dateTime = DateUtil.beginOfHour(date2);
+        long between1 = DateUtil.between(date1, dateTime, DateUnit.SECOND);
+        StatisticsTime statisticsTime1 = new StatisticsTime();
+        StatisticsTime statisticsTime2 = new StatisticsTime();
+        BeanUtil.copyProperties(statisticsTime, statisticsTime1);
+        BeanUtil.copyProperties(statisticsTime, statisticsTime2);
+        statisticsTime1.setStartTime(date1.getTime()/1000);
+        statisticsTime1.setEndTime(dateTime.getTime()/1000);
+        statisticsTime1.setRunningTime(between1);
+
+        statisticsTime2.setStartTime(dateTime.getTime()/1000);
+        statisticsTime2.setEndTime(date2.getTime()/1000);
+        long between2 = DateUtil.between(dateTime, date2, DateUnit.SECOND);
+        statisticsTime2.setRunningTime(between2);
+
+        return new StatisticsTime[]{statisticsTime1, statisticsTime2};
+
     }
 
     @Override
@@ -146,5 +207,7 @@ public class StatisticsTimeServiceImpl implements StatisticsTimeService {
         DateTime date = DateUtil.date();
         String today = date.toString("yyyy-MM-dd");
         appHoursCache.refresh(today);
+
+        log.info("the size of appHoursCache is: {} KB", RamUsageEstimator.sizeOfMap(appHoursCache.asMap())/1000);
     }
 }

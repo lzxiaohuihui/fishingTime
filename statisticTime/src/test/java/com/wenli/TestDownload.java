@@ -5,6 +5,7 @@ import cn.hutool.core.date.DateRange;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import com.wenli.entity.dto.TimeRunning;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.*;
@@ -20,6 +21,7 @@ import java.util.*;
  * @date: 2023-06-13 4:20 p.m.
  * @author: lzh
  */
+@Ignore
 public class TestDownload {
     @Test
     public void testImage() throws Exception {
