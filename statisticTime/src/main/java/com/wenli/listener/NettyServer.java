@@ -23,7 +23,7 @@ import javax.annotation.Resource;
  * @author: lzh
  */
 
-@Component
+
 @Slf4j
 public class NettyServer implements ApplicationRunner {
 

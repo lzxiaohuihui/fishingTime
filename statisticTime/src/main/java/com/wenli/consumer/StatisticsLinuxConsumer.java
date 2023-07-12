@@ -55,9 +55,9 @@ public class StatisticsLinuxConsumer {
             lastSeen = windowDto;
             channel.basicAck(deliveryTag, false);
             log.info("消费者签收消息成功 [{}]", deliveryTag);
-        }catch (RuntimeException e){
-            channel.basicNack(deliveryTag, false, true);
-            log.error("消费者签收消息失败 [{}], 放回原队列", deliveryTag);
+        // }catch (RuntimeException e){
+        //     channel.basicNack(deliveryTag, false, true);
+        //     log.error("消费者签收消息失败 [{}], 放回原队列", deliveryTag);
         }catch (Exception e){
             channel.basicNack(deliveryTag, false, false);
             log.error("消费者签收消息失败 [{}], 放入死信队列", deliveryTag);

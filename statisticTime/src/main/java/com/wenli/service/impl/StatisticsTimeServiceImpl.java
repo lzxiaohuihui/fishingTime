@@ -10,7 +10,9 @@ import com.wenli.entity.dto.AppTimeRunning;
 import com.wenli.entity.dto.TimeRunning;
 import com.wenli.entity.dto.WindowDto;
 import com.wenli.entity.po.StatisticsTime;
+import com.wenli.entity.po.StatisticsTimeDoc;
 import com.wenli.mapper.StatisticsMysqlMapper;
+import com.wenli.service.StatisticsESService;
 import com.wenli.service.StatisticsTimeService;
 import com.wenli.utils.MyDateUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +41,9 @@ public class StatisticsTimeServiceImpl implements StatisticsTimeService {
     private TransactionTemplate transactionTemplate;
 
     private LoadingCache<String, Map<String, List<AppTimeRunning>>> appHoursCache;
+
+    @Resource
+    private StatisticsESService statisticsESService;
 
     @PostConstruct
     public void init() {
@@ -87,24 +92,26 @@ public class StatisticsTimeServiceImpl implements StatisticsTimeService {
         boolean isSameHour = DateUtil.hour(date1, true) == DateUtil.hour(date2, true);
 
         if(lastSeen.getXid() != 0){
-            if (isSameHour){
-                statisticsMysqlMapper.insert(statisticsTime);
-            }else{
-                transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-                    @Override
-                    protected void doInTransactionWithoutResult(TransactionStatus status) {
-                        try {
+            transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+                @Override
+                protected void doInTransactionWithoutResult(TransactionStatus status) {
+                    try {
+                        if (isSameHour){
+                            statisticsMysqlMapper.insert(statisticsTime);
+                            statisticsESService.addTerm(new StatisticsTimeDoc(statisticsTime));
+                        }else{
                             StatisticsTime[] statisticsTimes = splitDateTime(statisticsTime, date1, date2);
                             statisticsMysqlMapper.insert(statisticsTimes[0]);
                             statisticsMysqlMapper.insert(statisticsTimes[1]);
-                        }catch (Exception e){
-                            status.setRollbackOnly();
-                            throw new RuntimeException("保存数据库异常...");
+                            statisticsESService.addTerm(new StatisticsTimeDoc(statisticsTimes[0]));
+                            statisticsESService.addTerm(new StatisticsTimeDoc(statisticsTimes[1]));
                         }
+                    }catch (Exception e){
+                        status.setRollbackOnly();
+                        throw new RuntimeException("保存数据库异常...");
                     }
-                });
-
-            }
+                }
+            });
         }
 
     }
