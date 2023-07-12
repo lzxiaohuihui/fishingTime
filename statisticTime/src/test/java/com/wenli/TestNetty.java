@@ -19,13 +19,15 @@ public class TestNetty {
 
     @Test
     public void testNetty(){
-        Map<String, List<Integer>> res = new HashMap<>();
-        res.put("test", Arrays.asList(1, 2, 3, 4, 5));
-        res.put("test1", Arrays.asList(1, 2, 3, 4, 5));
-        res.put("test2", Arrays.asList(1, 2, 3, 4, 5));
-        res.put("test3", Arrays.asList(1, 2, 3, 4, 5));
-        res.put("test4", Arrays.asList(1, 2, 3, 4, 5));
-        res.put("test5", Arrays.asList(1, 2, 3, 4, 5));
-        System.out.println(JSON.toJSONString(res).getBytes().length + "B");
+
+        String s1 = "abc";
+        String s2 = "abc";
+        String s3 = new String("abc");
+        String s4 = new String("abc");
+        System.out.println(s1 == s2);
+        System.out.println(s3 == s4);
+        System.out.println(s1 == s3);
+        String s5 = s3.intern();
+        System.out.println(s1 == s5);
     }
 }

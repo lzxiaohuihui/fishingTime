@@ -1,4 +1,4 @@
-package com.wenli;
+package com.wenli;// package com.wenli;
 
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateRange;
@@ -21,7 +21,7 @@ import java.util.*;
  * @date: 2023-06-13 4:20 p.m.
  * @author: lzh
  */
-@Ignore
+// @Ignore
 public class TestDownload {
     @Test
     public void testImage() throws Exception {
@@ -157,4 +157,111 @@ public class TestDownload {
         System.out.println(DateUtil.formatDate(new Date()));
 
     }
+
+
+    public int compress(char[] chars) {
+        int index = 0;
+        char cur = chars[0];
+        int curLen = 1;
+        for (int i = 1; i < chars.length; i++) {
+            if (chars[i] == cur){
+                curLen += 1;
+            }
+            else{
+                chars[index++] = cur;
+                if (curLen > 1) {
+                    String s = String.valueOf(curLen);
+                    for(char c: s.toCharArray()){
+                        chars[index++] =  c;
+                    }
+                }
+                curLen = 1;
+            }
+            cur = chars[i];
+        }
+        chars[index++] = cur;
+        if (curLen > 1) {
+            String s = String.valueOf(curLen);
+            for(char c: s.toCharArray()){
+                chars[index++] =  c;
+            }
+        }
+        return index;
+    }
+
+
+
+    @Test
+    public void testLc(){
+        char[] nums = {'a','b','b','b','b','b','b','b','b','b','b','b','b'};
+        compress(nums);
+        System.out.println(nums);
+    }
+
+    public boolean increasingTriplet(int[] nums) {
+        int n = nums.length;
+        int[] flag = new int[n];
+        int minValue = nums[0];
+        for(int i = 1; i < n; i++){
+            if(nums[i] > minValue) {
+                flag[i] = 1;
+            }
+            minValue = Math.min(nums[i], minValue);
+        }
+        int index = 0;
+        for(int i = 1; i < n; i++){
+            if(flag[i] == 1){
+                minValue = nums[i];
+                index = i;
+                break;
+            }
+        }
+
+        if(index == 0) return false;
+
+        for(int i = index+1; i < n; i++){
+            if(nums[i] > minValue) return true;
+            if(flag[i] == 1){
+                minValue = Math.min(nums[i], minValue);
+            }
+        }
+
+        return false;
+
+    }
+
+    @Test
+    public void testN(){
+        System.out.println(nHelp("nowcoder", 3));
+    }
+
+    public String nHelp(String s, int numRows){
+        char[][] res = new char[numRows][s.length()];
+        for (int i = 0; i < numRows; i++) Arrays.fill(res[i], ' ');
+        res[0][0] = s.charAt(0);
+
+        // 0: down, 1: up
+        int flag = 0;
+        int x = 0, y = 0;
+        for (int i = 1; i < s.length(); i++) {
+            if (flag == 0) x += 1;
+            else{
+                x -= 1;
+                y += 1;
+            }
+            if (x == numRows-1) flag = 1;
+            if (x == 0) flag = 0;
+            res[x][y] = s.charAt(i);
+        }
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < numRows; i++){
+            for(int j = 0; j < s.length(); j++){
+                if (res[i][j] != ' ') sb.append(res[i][j]);
+            }
+        }
+        return sb.toString();
+
+    }
+
+
 }

@@ -1,10 +1,15 @@
 package com.wenli.controller;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.wenli.entity.dto.AppTimeRunning;
+import com.wenli.entity.dto.ItemDto;
 import com.wenli.entity.po.StatisticsTime;
+import com.wenli.entity.po.StatisticsTimeDoc;
 import com.wenli.service.StatisticsBrowser;
+import com.wenli.service.StatisticsESService;
 import com.wenli.service.StatisticsOtherService;
 import com.wenli.service.StatisticsUrlService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -31,6 +36,9 @@ public class StatisticsOtherController {
 
     @Resource
     private StatisticsUrlService statisticsUrlService;
+
+    @Autowired
+    private StatisticsESService statisticsESService;
 
     @CrossOrigin
     @GetMapping("/getVscodeRunningTime/{day}")
@@ -72,6 +80,32 @@ public class StatisticsOtherController {
         return res;
 
     }
+
+    @CrossOrigin
+    @GetMapping("/search/{text}")
+    public List<ItemDto> getItems(@PathVariable String text){
+        if (text == null ) return null;
+        String[] split = text.split("_");
+        if (split.length > 2) return null;
+
+        String[] args = new String[2];
+        args[0] = split[0];
+        if (split.length == 1) args[1] = "";
+        else args[1] = split[1];
+
+        List<StatisticsTimeDoc> statistics = statisticsESService.findByTermQuery("statistics", args);
+        List<ItemDto> res = new ArrayList<>();
+
+        if (statistics == null) return null;
+        for (StatisticsTimeDoc statistic : statistics) {
+            res.add(BeanUtil.copyProperties(statistic, ItemDto.class));
+        }
+
+        return res;
+
+    }
+
+
 
     @CrossOrigin
     @PostMapping("/addStatisticsUrl")
